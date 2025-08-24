@@ -1,0 +1,29 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+
+    /* ✅ 新增：让 TS 认识 @ 指向 src */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
+    /* ✅ 新增：允许 import JSON */
+    "resolveJsonModule": true,
+
+    /* 可保留你已有的检查项 */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+
+    /* 建议：让编辑器认识 Vite 的类型（如 import.meta.env） */
+    "types": ["vite/client"]
+  },
+
+  /* ✅ 覆盖到 .d.ts，避免自定义声明不被扫描 */
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.d.ts"]
+}
