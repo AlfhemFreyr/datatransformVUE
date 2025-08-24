@@ -2,7 +2,13 @@
 <template>
   <div class="page">
     <!-- 全屏背景图，可通过 bgOpacity 调整透明度 -->
-    <div class="bg" :style="{ backgroundImage: 'url(' + bg + ')', opacity: bgOpacity }"></div>
+    <transition name="fade">
+      <div
+        :key="bgIndex"
+        class="bg"
+        :style="{ backgroundImage: `url(${currentBg})`, '--bg-opacity': bgOpacity }"
+      />
+    </transition>
      <div
        ref="chartsDOM"
        class="map"
@@ -11,17 +17,22 @@
    </div>
  </template>
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import bg1 from '@/assets/img/haidian.jpg'
+import bg2 from '@/assets/img/shahe.jpg'
+import bg3 from '@/assets/img/hangzhou.jpg'
+const bgOpacity = ref(0.55)         // 透明度（0 ~ 1）
+const images = [bg1, bg2, bg3]
+const bgIndex = ref(0)
+const currentBg = computed(() => images[bgIndex.value])
+let bgTimer: number | undefined
+
+import { onMounted, onUnmounted, ref, computed } from 'vue'
 import * as echarts from 'echarts'
 
 // 1) 引入三个区域的 GeoJSON（路径/大小写需与文件一致）
 import Changping from '@/assets/map/Changping.json'
 import Haidian from '@/assets/map/Haidian.json'
 import Yuhang from '@/assets/map/Yuhang.json'
-
-import bg from '@/assets/img/bg.jpg'   // 新增：背景图
-const bgOpacity = ref(0.55)            // 新增：可调透明度（0 ~ 1）
-
 const chartsDOM = ref<HTMLDivElement | null>(null)
 let chart: echarts.ECharts | null = null
 
@@ -343,12 +354,16 @@ const initCharts = () => {
 }
 
 onMounted(() => {
+  bgTimer = window.setInterval(() => {
+    bgIndex.value = (bgIndex.value + 1) % images.length
+  }, 4000) // 4 秒
   initCharts()
   window.addEventListener('resize', handleResize)
 })
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   if (chart) { chart.dispose(); chart = null }
+  if (bgTimer) window.clearInterval(bgTimer)
 })
 function handleResize() { chart?.resize() }
 </script>
@@ -367,9 +382,20 @@ function handleResize() { chart?.resize() }
     z-index: 0;                  /* 在底层 */
     pointer-events: none;        /* 不挡鼠标 */
     transition: opacity .25s;    /* 调整透明度有过渡 */
+    opacity: var(--bg-opacity, 1);
   }
   .map {
     position: relative;
     z-index: 1;                  /* 确保图表在背景之上 */
+  }
+  /* 渐出渐入过渡（可调时长/缓动） */
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .8s ease;
+  }
+  .fade-enter-from, .fade-leave-to {
+    opacity: 0;
+  }
+  .fade-enter-to, .fade-leave-from {
+    opacity: var(--bg-opacity, 1);
   }
 </style>
