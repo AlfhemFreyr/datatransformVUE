@@ -1,14 +1,14 @@
 
 <template>
   <div class="page">
-    <!-- 全屏背景图，可通过 bgOpacity 调整透明度 -->
-    <transition name="fade">
+    <!-- 可选全屏背景图，可通过 bgOpacity 调整透明度 -->
+    <!-- <transition name="fade">
       <div
         :key="bgIndex"
         class="bg"
         :style="{ backgroundImage: `url(${currentBg})`, '--bg-opacity': bgOpacity }"
       />
-    </transition>
+    </transition> -->
      <div
        ref="chartsDOM"
        class="map"
@@ -348,8 +348,8 @@ const initCharts = () => {
   }
 
   chart.setOption(option)
-  // 新增：首次渲染后绘制“空中弧形数据流”
-  updateFlowArcs()
+  // 可选：首次渲染后绘制“空中弧形数据流”
+  // updateFlowArcs()
   chart.on('click', (params) => console.log('[click]', params))
 }
 
